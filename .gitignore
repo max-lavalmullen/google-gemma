@@ -1,0 +1,9 @@
+*.gguf
+*.bin
+*.safetensors
+*.ot
+*.so
+llama.cpp/build/
+llama.cpp/models/
+.DS_Store
+OBLITERATUS

@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# Ensure we are running from the script's directory (fixes double-click issue)
+cd "$(dirname "$0")"
+
+# Define Model Paths
+MODEL_GEN="google_gemma-3-12b-it-qat-Q6_K_L.gguf"
+MODEL_CODE="codegemma-1.1-7b-it-Q6_K.gguf"
+MODEL_TRANS="translategemma-12b-it.Q6_K.gguf"
+MODEL_MED="medgemma-1.5-4b-it-Q8_0.gguf"
+
+# Define the Engine Path
+ENGINE="./llama.cpp/build/bin/llama-cli"
+
+# Check if engine exists
+if [ ! -f "$ENGINE" ]; then
+    echo "Error: llama-cli engine not found at $ENGINE"
+    echo "Please ensure you are running this script from the 'google-gemma' folder."
+    exit 1
+fi
+
+# Function to run a model
+run_model() {
+    local model_file=$1
+    echo "---------------------------------------------------"
+    echo "Starting Google Gemma Model..."
+    echo "File: $model_file"
+    echo "---------------------------------------------------"
+    
+    $ENGINE \
+      -m "$model_file" \
+      -ngl 99 \
+      -c 8192 \
+      -cnv \
+      --color on
+}
+
+# Interactive Mode Logic
+MODE="$1"
+
+if [ -z "$MODE" ]; then
+    echo "========================================="
+    echo "      Google Gemma Launcher              "
+    echo "========================================="
+    echo "Which model would you like to run?"
+    echo ""
+    echo "  [gen]   General Assistant (Gemma 3)"
+    echo "  [code]  Programmer (CodeGemma)"
+    echo "  [trans] Translator (TranslateGemma)"
+    echo "  [med]   Doctor (MedGemma)"
+    echo ""
+    read -p "Enter mode (gen/code/trans/med): " USER_INPUT
+    MODE="$USER_INPUT"
+fi
+
+# Selection Logic
+case "$MODE" in
+    gen|general)
+        run_model "$MODEL_GEN"
+        ;;
+    code|dev)
+        run_model "$MODEL_CODE"
+        ;;
+    trans|translate)
+        run_model "$MODEL_TRANS"
+        ;;
+    med|medical)
+        run_model "$MODEL_MED"
+        ;;
+    *)
+        echo ""
+        echo "Error: Unknown mode '$MODE'"
+        echo "Please type one of: gen, code, trans, med"
+        exit 1
+        ;;
+esac
