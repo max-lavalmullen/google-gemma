@@ -7,3 +7,9 @@ llama.cpp/build/
 llama.cpp/models/
 .DS_Store
 OBLITERATUS
+
+# Secrets — never commit real keys
+.env
+.env.local
+.env.production
+.env.*.local
